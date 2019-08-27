@@ -71,6 +71,7 @@ def ChangeTemplate():
 
 # Declare the Task Bar Icon
 class MyTaskBarIcon(TaskBarIcon):
+    ID_HISTORY = wx.NewId()
     ID_CHANGE = wx.NewId()
     ID_EXIT = wx.NewId()
     TITLE = "Insert Label"
@@ -80,6 +81,9 @@ class MyTaskBarIcon(TaskBarIcon):
         self.SetIcon(logo.logo.getIcon(), self.TITLE)
         self.Bind(wx.EVT_MENU, self.onChange, id=self.ID_CHANGE)
         self.Bind(wx.EVT_MENU, self.onExit, id=self.ID_EXIT)
+
+    def onHistory(self, event):
+        pass
 
     def onChange(self, event):
         # For User Modify the Input Template
@@ -97,7 +101,8 @@ class MyTaskBarIcon(TaskBarIcon):
         return menu
 
     def getMenuAttrs(self):
-        return [('修改配置模板', self.ID_CHANGE),
+        return [('显示历史EIP', self.ID_HISTORY), 
+                ('修改配置模板', self.ID_CHANGE),
                 ('退出', self.ID_EXIT)]
 
 

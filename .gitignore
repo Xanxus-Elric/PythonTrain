@@ -338,3 +338,12 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/NewHotKey/venv
+/NewHotKey/NewHotKey/Template.txt
+/NewHotKey/NewHotKey/.idea
+/NewHotKey/NewHotKey/__pycache__
+/NewHotKey/NewHotKey/build
+/NewHotKey/NewHotKey/dist
+/NewHotKey/NewHotKey/venv
+/NewHotKey/NewHotKey/logo.ico
+/NewHotKey/NewHotKey/Main.spec
