@@ -37,24 +37,14 @@ def InitTemplateStrFromFile():
     DateStr = strftime('%Y%m%d', localtime(timeStamp))
 
     with open(path, "r") as s:
-        line = s.readline()
+        lines = s.readlines()
 
-        try:
-            g = match(r"^(?P<Name>\w+)\s+(?P<Desc>\w+)\s*(?P<Eip>\d*)\s*$", line)
+        TemplateStr = "Hi \n"
 
-            Name = g.group("Name")
-            Description = g.group("Desc")
-            EipNumber = g.group("Eip")
-            EIP = EipNumber
+        for line in lines:
+            TemplateStr = TemplateStr + line
 
-            if EIP != "":
-                EIP = "_EIP" + EIP
-
-            TemplateStr = "CN_D{Date}_{Name}_{Desc}{Eip}".format(Date=DateStr, Name=Name,
-                                                                 Desc=Description, Eip=EIP)
-        except AttributeError:
-            ShowMessageBox("Please Check the Setting: Name Description [EIPNo.]", "Invalid Setting")
-
+        TemplateStr = TemplateStr + "\nThanks and Best Regards!\nJune"
 
 def ChangeTemplate():
     global TemplateStr
@@ -71,7 +61,6 @@ def ChangeTemplate():
 
 # Declare the Task Bar Icon
 class MyTaskBarIcon(TaskBarIcon):
-    ID_HISTORY = wx.NewId()
     ID_CHANGE = wx.NewId()
     ID_EXIT = wx.NewId()
     TITLE = "Insert Label"
@@ -81,9 +70,6 @@ class MyTaskBarIcon(TaskBarIcon):
         self.SetIcon(logo.logo.getIcon(), self.TITLE)
         self.Bind(wx.EVT_MENU, self.onChange, id=self.ID_CHANGE)
         self.Bind(wx.EVT_MENU, self.onExit, id=self.ID_EXIT)
-
-    def onHistory(self, event):
-        pass
 
     def onChange(self, event):
         # For User Modify the Input Template
@@ -101,8 +87,7 @@ class MyTaskBarIcon(TaskBarIcon):
         return menu
 
     def getMenuAttrs(self):
-        return [('显示历史EIP', self.ID_HISTORY), 
-                ('修改配置模板', self.ID_CHANGE),
+        return [('修改F2Key模板', self.ID_CHANGE),
                 ('退出', self.ID_EXIT)]
 
 
@@ -115,6 +100,24 @@ def OnKeyboardEvent(event):
     global Description
     global EipNumber
 
+    if event.Key == "F1":
+        #insert the Label "Hi \n\n\n\n\nThanks and Best Regards\nJune"
+        # Check current cursor on what file
+        window = GetForegroundWindow()
+        title = GetWindowText(window)
+
+        # Copy the Template Str to cursor position
+        OpenClipboard()
+        EmptyClipboard()
+
+        SetClipboardText("Hi \n\n\n\n\nThanks and Best Regards!\nJune")
+
+        CloseClipboard()
+        keybd_event(17, 0, 0, 0)  # key Ctrl
+        keybd_event(86, 0, 0, 0)  # key v
+        keybd_event(17, 0, KET_RELEASE, 0)  # release Key Ctrl
+        keybd_event(86, 0, KET_RELEASE, 0)  # release Key v
+
     if event.Key == "F2":
         # Check if the Template File has been modified
         CurrentStamp = os.path.getmtime(path)
@@ -124,7 +127,7 @@ def OnKeyboardEvent(event):
 
         # Check if the Template File is valid
         if TemplateStr == "":
-            ShowMessageBox("Please Check the Setting: Name Description [EIPNo.]", "Invalid Setting")
+            ShowMessageBox("Please Check the Template Setting", "Invalid Setting")
             return True
 
         # Check current cursor on what file
@@ -135,22 +138,7 @@ def OnKeyboardEvent(event):
         OpenClipboard()
         EmptyClipboard()
 
-        if ".sdl" in title:
-            SetClipboardText("#" + TemplateStr + ">>\n\n" + "#" + TemplateStr + "<<\n")
-        elif "Commit - TortoiseGit" in title:
-        
-            if EipNumber != "":
-                CommitStr = "**  [M00x]\n     Issue        : [EIP"+EipNumber+"] "+Description
-            else:
-                CommitStr = "**  [M00x]\n     Issue        : "+Description
-
-            CommitStr += "\n     Cust.Ref.No. :"
-            CommitStr += "\n     Label        : " + TemplateStr
-            CommitStr += "\n     File         : "
-            SetClipboardText(CommitStr)
-            
-        else:
-            SetClipboardText("//" + TemplateStr + ">>\n\n" + "//" + TemplateStr + "<<\n")
+        SetClipboardText(TemplateStr)
 
         CloseClipboard()
         keybd_event(17, 0, 0, 0)  # key Ctrl
@@ -196,7 +184,7 @@ if __name__ == "__main__":
     except FileNotFoundError:
         # if "Template.txt" does not exist, create and initialize it
         with open(path, "w") as f:
-            f.write("Name Description 111111")
+            f.write("Hi \n\n\n\n\nThanks and Best Regards!\nJune")
         BeforeStamp = os.path.getmtime(path)
 
     # Initialize the Label
